@@ -5,6 +5,7 @@ class OpensslAT3 < Formula
   mirror "https://www.mirrorservice.org/sites/ftp.openssl.org/source/openssl-3.1.1.tar.gz"
   sha256 "b3aa61334233b852b63ddb048df181177c2c659eb9d4376008118f9c08d07674"
   license "Apache-2.0"
+  revision 1
 
   livecheck do
     url "https://www.openssl.org/source/"
@@ -21,13 +22,9 @@ class OpensslAT3 < Formula
     sha256 x86_64_linux:   "1d2e71765c0e459ba1d465a4ac4ded77f13fbcd446a74bc40d40e444dca56e78"
   end
 
-  keg_only :shadowed_by_macos, "macOS provides LibreSSL"
-
   depends_on "ca-certificates"
 
   on_linux do
-    keg_only "it conflicts with the `openssl@1.1` formula"
-
     resource "Test::Harness" do
       url "https://cpan.metacpan.org/authors/id/L/LE/LEONT/Test-Harness-3.44.tar.gz"
       sha256 "7eb591ea6b499ece6745ff3e80e60cee669f0037f9ccbc4e4511425f593e5297"
@@ -43,6 +40,12 @@ class OpensslAT3 < Formula
       sha256 "f108bd46420d2f00d242825f865b0f68851084924924f92261d684c49e3e7a74"
     end
   end
+
+  # These paths used to live in `openssl@1.1`.
+  link_overwrite "bin/c_rehash", "bin/openssl", "include/openssl/*.h"
+  link_overwrite "lib/libcrypto.*", "lib/libssl.*"
+  link_overwrite "lib/pkgconfig/libcrypto.pc", "lib/pkgconfig/libssl.pc", "lib/pkgconfig/openssl.pc"
+  link_overwrite "share/doc/openssl/*", "share/man/man*/*ssl"
 
   # SSLv2 died with 1.1.0, so no-ssl2 no longer required.
   # SSLv3 & zlib are off by default with 1.1.0 but this may not
